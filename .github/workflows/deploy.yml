@@ -20,21 +20,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 检出仓库
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # 取全量历史，笔记的修改时间才准确
 
       - name: 安装 Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
 
+      - name: 缓存 Quartz 插件
+        uses: actions/cache@v5
+        with:
+          path: .quartz
+          key: ${{ runner.os }}-plugins-${{ hashFiles('quartz.config.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-plugins-
+
       - name: 安装依赖
         run: npm ci
 
+      # 注意：不要用 `npx quartz build`。
+      # Windows 下提交的文件没有可执行位，Linux 上会报 `quartz: Permission denied`。
+      # 直接用 node 调入口文件，绕过可执行位问题。
       - name: 构建站点
-        run: npx quartz build
+        run: node ./quartz/bootstrap-cli.mjs build
 
       - name: 上传产物
         uses: actions/upload-pages-artifact@v3
