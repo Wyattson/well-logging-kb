@@ -1,0 +1,306 @@
+# 测井课程知识库 · Quartz 5 站点配置
+# 生成自 quartz.config.default.yaml，改动处均带中文注释
+configuration:
+  pageTitle: 测井课程知识库
+  pageTitleSuffix: ""
+  enableSPA: true
+  enablePopovers: true
+  # 不接入任何统计服务（国内可访问性 + 隐私）
+  analytics: null
+  locale: zh-CN
+  # 上线后改成实际的 GitHub Pages 地址：<用户名>.github.io/<仓库名>
+  baseUrl: wyattson.github.io/well-logging-kb
+  ignorePatterns:
+    - private
+    - templates
+    - .obsidian
+  theme:
+    # local = 完全不请求 Google Fonts，直接用系统字体（国内访问更稳）
+    fontOrigin: local
+    cdnCaching: false
+    typography:
+      title: '"Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif'
+      header: '"Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif'
+      body: '"Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", sans-serif'
+      code: '"JetBrains Mono", "Cascadia Code", "Fira Code", Consolas, "Courier New", monospace'
+    colors:
+      lightMode:
+        light: "#fbfaf7"
+        lightgray: "#e8e4dc"
+        gray: "#b5aea3"
+        darkgray: "#4a453e"
+        dark: "#1c1a17"
+        secondary: "#14665e"
+        tertiary: "#a8712b"
+        highlight: "rgba(20, 102, 94, 0.12)"
+        textHighlight: "#ffe25a88"
+      darkMode:
+        light: "#141618"
+        lightgray: "#2a2d30"
+        gray: "#5a5f63"
+        darkgray: "#d5d3ce"
+        dark: "#ecebe7"
+        secondary: "#5fb8ab"
+        tertiary: "#d9a35e"
+        highlight: "rgba(95, 184, 171, 0.15)"
+        textHighlight: "#b3aa0288"
+plugins:
+  - source: "@quartz-community/created-modified-date"
+    enabled: true
+    options:
+      defaultDateType: modified
+      priority:
+        - frontmatter
+        - git
+        - filesystem
+    order: 10
+  - source: "@quartz-community/syntax-highlighting"
+    enabled: true
+    options:
+      theme:
+        light: github-light
+        dark: github-dark
+      keepBackground: false
+    order: 20
+  - source: "@quartz-community/obsidian-flavored-markdown"
+    enabled: true
+    options:
+      enableInHtmlEmbed: false
+      enableCheckbox: true
+      # 关键：Obsidian 的块引用是行尾 ^id，默认开启会把公式里的上标
+      # F = a / φ^m、I = b / S_o^n 中的 ^m / ^n 当成块 ID 删掉。
+      # 本库没有真正的块引用，直接关闭，公式才能完整显示。
+      parseBlockReferences: false
+    order: 30
+  - source: "@quartz-community/github-flavored-markdown"
+    enabled: true
+    order: 40
+  - source: "@quartz-community/table-of-contents"
+    enabled: true
+    order: 50
+    layout:
+      position: right
+      priority: 30
+  - source: "@quartz-community/crawl-links"
+    enabled: true
+    options:
+      # Obsidian 的 [[文件名]] 双链按最短路径解析
+      markdownLinkResolution: shortest
+    order: 60
+  - source: "@quartz-community/description"
+    enabled: true
+    order: 70
+  - source: "@quartz-community/latex"
+    enabled: true
+    options:
+      renderEngine: katex
+    order: 80
+  - source: "@quartz-community/citations"
+    enabled: false
+    order: 85
+  - source: "@quartz-community/hard-line-breaks"
+    enabled: false
+    order: 90
+  - source: "@quartz-community/ox-hugo"
+    enabled: false
+    order: 91
+  - source: "@quartz-community/roam"
+    enabled: false
+    order: 92
+  # 系统字体方案下不需要 Google Fonts 插件
+  - source: "@quartz-community/quartz-fonts"
+    enabled: false
+  - source: "@quartz-themes/core"
+    enabled: false
+    options:
+      theme: tokyo-night
+      mode: both
+  - source: "@quartz-community/remove-draft"
+    enabled: true
+  - source: "@quartz-community/explicit-publish"
+    enabled: false
+  - source: "@quartz-community/alias-redirects"
+    enabled: true
+  - source: "@quartz-community/content-index"
+    enabled: true
+    options:
+      enableSiteMap: true
+      enableRSS: true
+  - source: "@quartz-community/favicon"
+    enabled: true
+  # 关闭 OG 图片生成：需要额外字体文件，中文易出豆腐块，且会拖慢构建
+  - source: "@quartz-community/og-image"
+    enabled: false
+  # 项目站点（<用户名>.github.io/<仓库名>）不需要 CNAME，开启会写入错误的自定义域名
+  - source: "@quartz-community/cname"
+    enabled: false
+  - source: "@quartz-community/canvas-page"
+    enabled: true
+  - source: "@quartz-community/content-page"
+    enabled: true
+  - source: "@quartz-community/folder-page"
+    enabled: true
+  - source: "@quartz-community/tag-page"
+    enabled: true
+  - source: "@quartz-community/explorer"
+    enabled: true
+    layout:
+      position: left
+      priority: 50
+  - source: "@quartz-community/graph"
+    enabled: true
+    layout:
+      position: right
+      priority: 10
+  - source: "@quartz-community/search"
+    enabled: true
+    layout:
+      position: left
+      priority: 20
+      group: toolbar
+      groupOptions:
+        grow: true
+  - source: "@quartz-community/backlinks"
+    enabled: true
+    layout:
+      position: right
+      priority: 50
+  # 正文每篇都有自己的 H1，再渲染一次标题会重复，故关闭
+  # 保留给文件夹页 / 标签页做标题；正文页在 layout.byPageType.content 里排除（每篇自己有 H1）
+  - source: "@quartz-community/article-title"
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 10
+  - source: "@quartz-community/content-meta"
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 20
+  - source: "@quartz-community/tag-list"
+    enabled: false
+    layout:
+      position: beforeBody
+      priority: 30
+  - source: "@quartz-community/page-title"
+    enabled: true
+    layout:
+      position: left
+      priority: 10
+  - source: "@quartz-community/darkmode"
+    enabled: true
+    layout:
+      position: left
+      priority: 30
+      group: toolbar
+  - source: "@quartz-community/reader-mode"
+    enabled: true
+    layout:
+      position: left
+      priority: 35
+      group: toolbar
+  - source: "@quartz-community/breadcrumbs"
+    enabled: true
+    options:
+      rootName: 首页
+      spacerSymbol: "›"
+    layout:
+      position: beforeBody
+      priority: 5
+      condition: not-index
+  - source: "@quartz-community/comments"
+    enabled: false
+    options:
+      provider: giscus
+      options: {}
+    layout:
+      position: afterBody
+      priority: 10
+  - source: "@quartz-community/footer"
+    enabled: true
+    options:
+      links:
+        返回仓库: https://github.com/Wyattson/well-logging-kb
+    layout:
+      position: footer
+      priority: 50
+  - source: "@quartz-community/recent-notes"
+    enabled: false
+  - source: "@quartz-community/spacer"
+    enabled: true
+    options: {}
+    order: 25
+    layout:
+      position: left
+      priority: 25
+      display: mobile-only
+  - source: "@quartz-community/bases-page"
+    enabled: true
+    options: {}
+    order: 50
+  # 必需插件：负责解析并剥离 frontmatter。关掉会导致 YAML 原文漏进正文。
+  # 这里保留插件但隐藏面板（hidePropertiesView），避免英文 "Properties" 出现在中文页面上。
+  - source: "@quartz-community/note-properties"
+    enabled: true
+    options:
+      includeAll: false
+      includedProperties:
+        - description
+        - tags
+        - aliases
+      excludedProperties: []
+      hidePropertiesView: true
+      delimiters: ---
+      language: yaml
+    order: 5
+    layout:
+      position: beforeBody
+      priority: 15
+      display: all
+  - source: "@quartz-community/unlisted-pages"
+    enabled: true
+    options: {}
+    order: 45
+  - source: "@quartz-community/encrypted-pages"
+    enabled: false
+    options:
+      iterations: 600000
+      passwordField: password
+      unlistWhenEncrypted: false
+      outputPath: static/encryptedContentIndex.json
+    order: 900
+  - source: "@quartz-community/stacked-pages"
+    enabled: false
+    layout:
+      position: afterBody
+      priority: 50
+      display: all
+layout:
+  groups:
+    toolbar:
+      priority: 35
+      direction: row
+      gap: 0.5rem
+  byPageType:
+    "404":
+      positions:
+        beforeBody: []
+        left: []
+        right: []
+    content:
+      # 正文页已有自己的 H1，排除掉重复的文章标题
+      exclude:
+        - article-title
+        - "@quartz-community/article-title"
+    folder:
+      exclude:
+        - reader-mode
+      positions:
+        right: []
+    tag:
+      exclude:
+        - reader-mode
+      positions:
+        right: []
+    canvas: {}
+    bases: {}
