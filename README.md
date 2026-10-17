@@ -61,6 +61,17 @@ sync.config.json             ← 笔记库路径 + 受保护文件
 - `layout.byPageType.content.exclude: [article-title]` —— 正文页已有自己的 H1，避免标题重复；文件夹页和标签页仍保留标题
 - `crawl-links.markdownLinkResolution: shortest` —— 笔记里的 `[[双链]]` 全是裸文件名，只能按最短路径解析
 
+## 对 Quartz 打的两个小补丁
+
+1. **`scripts/patch-quartz.mjs`**（`npm install` / `npm ci` 后由 `postinstall` 自动执行，CI 里也单独跑一次）
+   Quartz 的 explorer 插件打开笔记时会对当前文件调用 `scrollIntoView({behavior:"smooth"})`，
+   缺少 `block:"nearest"`，导致**整个页面被向下滚 277px**，标题和面包屑直接顶出屏幕。
+   补丁把它改成最小滚动。上游修好之后这个脚本会自动跳过，可安全删除。
+
+2. **`quartz/styles/custom.scss`**
+   图谱缩放后节点标签会溢出 250px 的侧边面板，加 `overflow: hidden` 裁掉；
+   另外让正文宽表格在窄屏上横向滚动，避免撑破版面（长表在手机上本来是痛点）。
+
 ## 换成自己的域名
 
 1. 改 `quartz.config.yaml` 里的 `baseUrl`；

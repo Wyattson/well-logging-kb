@@ -41,6 +41,10 @@ jobs:
       - name: 安装依赖
         run: npm ci
 
+      # 修复 explorer 打开笔记时把整页滚动的问题（见 scripts/patch-quartz.mjs）
+      - name: 应用 Quartz 补丁
+        run: node scripts/patch-quartz.mjs
+
       # 注意：不要用 `npx quartz build`。
       # Windows 下提交的文件没有可执行位，Linux 上会报 `quartz: Permission denied`。
       # 直接用 node 调入口文件，绕过可执行位问题。
