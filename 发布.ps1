@@ -48,8 +48,20 @@ $stamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 git commit -m "更新测井课程知识库 $stamp"
 if ($LASTEXITCODE -ne 0) { throw "提交失败" }
 
-git push
-if ($LASTEXITCODE -ne 0) { throw "推送失败，请检查网络或 GitHub 登录状态" }
+# 国内访问 github.com 的 git 端口时常被重置，推送失败自动重试
+$env:GIT_TERMINAL_PROMPT = "0"
+$pushed = $false
+for ($i = 1; $i -le 8; $i++) {
+    Write-Host "  推送尝试 $i/8 ..." -ForegroundColor DarkGray
+    git push 2>&1 | Out-Host
+    if ($LASTEXITCODE -eq 0) { $pushed = $true; break }
+    if ($i -lt 8) {
+        $wait = 5 * $i
+        Write-Host "  连接被重置，$wait 秒后重试" -ForegroundColor Yellow
+        Start-Sleep -Seconds $wait
+    }
+}
+if (-not $pushed) { throw "推送失败 8 次：请检查网络 / 代理 / GitHub 登录状态" }
 
 Write-Host "`n✓ 已推送。GitHub Actions 约 1 分钟后完成部署。" -ForegroundColor Green
 Write-Host "  网站地址：https://wyattson.github.io/well-logging-kb/`n" -ForegroundColor Green
